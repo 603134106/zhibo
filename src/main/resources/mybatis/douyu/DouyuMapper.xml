@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.live.zbproject.douyu.dao.DouyuMapper">
+    <insert id="insert" >
+        insert into dy_userroom
+            (rid,rn,uid,nn,gender,title,fans,hot,notice
+            ,week_barrage_num,week_gift_price,create_at
+            ,update_at,c2url,c2name)
+        values(#{rid},#{rn},#{uid},#{nn},#{gender},#{title},#{fans},#{hot},#{notice}
+              ,#{week_barrage_num},#{week_gift_price},#{create_at}
+              ,#{update_at},#{c2url},#{c2name})
+    </insert>
+
+    <delete id="deleteByRid" parameterType="Integer">
+        delete from dy_userroom where rid = #{rid}
+    </delete>
+
+</mapper>
