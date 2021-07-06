@@ -21,13 +21,14 @@ public class Response implements Serializable {
     private Object data;
     private String msg;
     private boolean success;
+    private Integer error;
 
     public static Response success(Object data,String msg){
         return Response.builder()
                 .code(200)
                 .success(true)
                 .msg(msg)
-                .data(data)
+                .data(data).error(0)
                 .build();
     }
 
@@ -36,7 +37,7 @@ public class Response implements Serializable {
                 .code(code)
                 .success(true)
                 .msg(msg)
-                .data(data)
+                .data(data).error(0)
                 .build();
     }
 
@@ -45,7 +46,7 @@ public class Response implements Serializable {
                 .code(400)
                 .success(false)
                 .msg(msg)
-                .data(data)
+                .data(data).error(1)
                 .build();
     }
 
@@ -54,7 +55,7 @@ public class Response implements Serializable {
                 .code(code)
                 .success(false)
                 .msg(msg)
-                .data(data)
+                .data(data).error(1)
                 .build();
     }
 

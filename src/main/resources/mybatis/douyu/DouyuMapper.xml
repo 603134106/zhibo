@@ -5,14 +5,59 @@
         insert into dy_userroom
             (rid,rn,uid,nn,gender,title,fans,hot,notice
             ,week_barrage_num,week_gift_price,create_at
-            ,update_at,c2url,c2name)
+            ,update_at,c2url,c2name,zone1_id,zone2_id,zone1_name,zone2_name)
         values(#{rid},#{rn},#{uid},#{nn},#{gender},#{title},#{fans},#{hot},#{notice}
-              ,#{week_barrage_num},#{week_gift_price},#{create_at}
-              ,#{update_at},#{c2url},#{c2name})
+              ,#{weekBarrageNum},#{weekGiftPrice},#{createAt}
+              ,#{updateAt},#{c2url},#{c2name},#{zone1Id},#{zone2Id},#{zone1Name},#{zone2Name})
     </insert>
 
     <delete id="deleteByRid" parameterType="Integer">
         delete from dy_userroom where rid = #{rid}
     </delete>
 
+    <insert id="initTask">
+        insert into task_list
+            (zone1_id,zone2_id,create_at,update_at,valid,category,zone1_name,zone2_name)
+            values(#{zone1Id},#{zone2Id},#{createAt},#{updateAt},#{valid},#{category},#{zone1Name},#{zone2Name})
+    </insert>
+
+    <delete id="deleteTask">
+        delete from task_list where zone1_id = #{zone1_id} and zone2_id = #{zone2_id}
+    </delete>
+
+    <select id="findTaskList" resultMap="task_list">
+        select * from task_list where category = #{category}
+    </select>
+
+    <select id="findOneByRid" resultType="com.live.zbproject.douyu.entity.DyUserRoom">
+        select * from dy_userroom where rid = #{rid} limit 1
+    </select>
+
+    <select id="getTaskDetail" resultType="com.live.zbproject.douyu.entity.DyUserRoom">
+        select t.*,date_format(t.update_at,'%Y-%m-%d %H:%i:%s')update_time
+        from dy_userroom t where t.zone1_id = #{zone1_id} and t.zone2_id = #{zone2_id}
+        order by t.hot desc
+    </select>
+
+    <select id="getTaskList" resultMap="task_list">
+        select t.*,date_format(t.update_at,'%Y-%m-%d %H:%i:%s')update_time from task_list t limit 9999
+    </select>
+
+    <select id="getDyCountByZoneId" resultType="java.lang.Integer">
+        select count(1) from dy_userroom
+        where zone1_id = #{zone1Id}
+        and zone2_id = #{zone2Id}
+    </select>
+
+    <resultMap id="task_list" type="com.live.zbproject.common.entity.TaskList">
+        <id property="id" column="id"/>
+        <result property="zone1Id" column="zone1_id"/>
+        <result property="zone2Id" column="zone2_id"/>
+        <result property="valid" column="valid"/>
+        <result property="category" column="category"/>
+        <result property="zone1Name" column="zone1_name"/>
+        <result property="zone2Name" column="zone2_name"/>
+        <result property="update_time" column="update_time"/>
+        <result property="anchor_num" column="anchor_num"/>
+    </resultMap>
 </mapper>

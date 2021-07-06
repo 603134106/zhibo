@@ -17,6 +17,9 @@ spring:
       connection-test-query: select 1
 # mybatis configurations
 mybatis:
-  mapper-locations: classpath:mybatis/mapper/**/*.xml,classpath:mybatis/*.xml
+  mapper-locations: classpath:mybatis/**/*.xml,classpath:mybatis/*.xml
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+logging:
+  com.live.zbproject.ZbprojectApplication: debug

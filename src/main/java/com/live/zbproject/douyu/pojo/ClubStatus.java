@@ -1,6 +1,10 @@
 package com.live.zbproject.douyu.pojo;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
 
 /**
  * @author 庄科炜
@@ -9,7 +13,10 @@ import lombok.Data;
  * @create 2021/6/28 15:31
  **/
 @Data
-public class ClubStatus {
+@NoArgsConstructor
+@AllArgsConstructor
+public class ClubStatus implements Serializable {
+    private static final long serialVersionUID = -8685641745495327600L;
     private String orgmask;
     private String org_sname;
     private String room_label;

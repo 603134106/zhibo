@@ -1,6 +1,8 @@
 package com.live.zbproject.douyu.pojo;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
@@ -11,6 +13,8 @@ import java.io.Serializable;
  * @create 2021/6/28 10:30
  **/
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class ICV1 implements Serializable {
     private static final long serialVersionUID = -6744008008065606574L;
     private String id;
