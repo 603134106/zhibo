@@ -106,12 +106,27 @@ public class DouyuController {
         }
     }
 
+    //
     @Scheduled(cron = "0 0 11,23 * * ?")
     public void douyuTaskSchedule(){
         try {
             douyuService.douyuTaskSchedule();
         } catch (Exception e) {
             log.error(e.getMessage());
+        }
+    }
+
+    @PostMapping("/test01")
+    public Response test01(Integer rid){
+        try {
+            List<Integer> ridList = new ArrayList<>();
+            ridList.add(rid);
+            douyuService.taskSchedule2(ridList);
+            return Response.success(null,"success");
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error(e.getMessage());
+            return Response.failure(null,"fail");
         }
     }
 

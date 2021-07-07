@@ -1,13 +1,13 @@
 package com.live.zbproject.douyu.service;
 
 import com.live.zbproject.common.entity.TaskList;
+import com.live.zbproject.common.entity.ToubangInfo;
 import com.live.zbproject.common.utils.JSONUtil;
 import com.live.zbproject.common.vo.DouyuReqParams;
 import com.live.zbproject.common.vo.DouyuTaskDetailVo;
 import com.live.zbproject.douyu.dao.DouyuMapper;
 import com.live.zbproject.douyu.entity.DyUserRoom;
 import com.live.zbproject.douyu.pojo.*;
-import javafx.concurrent.Task;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.*;
 import org.apache.http.client.HttpRequestRetryHandler;
@@ -36,6 +36,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author 庄科炜
@@ -137,6 +138,29 @@ public class DouyuServiceImpl implements DouyuService{
         }
     }
 
+    @Async
+    public void taskSchedule2(List<Integer> ridList) throws Exception{
+        CloseableHttpClient httpClient = getHttpClient();
+        List<ToubangInfo> toubangInfoList = new ArrayList<>();
+        for (Integer rid : ridList) {
+            //1为斗鱼
+            log.info("task2 RID为:"+rid);
+            String url = "http://www.toubang.tv/anchor/ajax/getinfo?pt=1&rid="+rid+"&dt=1&date=0";
+            HttpGet httpGet = new HttpGet(url);
+            httpGet.addHeader("Referer","http://www.toubang.tv/anchor/1_"+rid+".html");
+            CloseableHttpResponse execute = httpClient.execute(httpGet);
+            HttpEntity entity = execute.getEntity();
+            InputStream inputStream = entity.getContent();
+            String content = JSONUtil.convertStreamToString(inputStream);
+            ToubangInfo toubangInfo = JSONUtil.parseObject(content, ToubangInfo.class);
+            if(toubangInfo==null)continue;
+            toubangInfo.setRid(rid);
+            toubangInfoList.add(toubangInfo);
+        }
+        douyuMapper.saveOrUpdateTouBang(toubangInfoList);
+    }
+
+    //用来补全一阶段的信息 以删代更的多
     @Transactional(rollbackFor = Exception.class)
     @Async
     public void taskSchedule(String zone1Id,String zone2Id) throws Exception{
@@ -162,6 +186,7 @@ public class DouyuServiceImpl implements DouyuService{
         //httpClient.close();
         List<DyUserRoom> dyUserRoomList = new ArrayList<>();
         int count = 0;
+        List<Integer> ridList = new ArrayList<>();
         //删除已有工会的信息条
         for ( MixList res: result) {
             for (RL rl: res.getRl()) {
@@ -181,10 +206,9 @@ public class DouyuServiceImpl implements DouyuService{
                 }else{
                     rid = rl.getVideo().getVid();
                 }
-                //考虑到这个房间可能今天播英雄联盟明天播穿越火线,所以以删代更
-                douyuMapper.deleteByRid(rid);
                 //如果 data为空就说明没加工会 信息需要入库
                 if(data==null){
+                    ridList.add(rl.getRid());
                     if(rl.getVideo()==null){
                         dyUserRoomList.add(
                                 DyUserRoom.builder()
@@ -226,6 +250,12 @@ public class DouyuServiceImpl implements DouyuService{
                 }
             }
         }
+        ridList = ridList.stream().filter(p->p!=null).collect(Collectors.toList());
+        //第二个补全任务开跑
+        taskSchedule2(ridList);
+        log.info("继续往下走");
+        //批量删除
+        douyuMapper.deleteBatch(dyUserRoomList);
         //批量插入
         SqlSession sqlSession = sqlSessionFactory.openSession(ExecutorType.BATCH);
         DouyuMapper mapper = sqlSession.getMapper(DouyuMapper.class);

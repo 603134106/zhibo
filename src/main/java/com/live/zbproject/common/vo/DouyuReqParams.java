@@ -1,6 +1,9 @@
 package com.live.zbproject.common.vo;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
@@ -11,6 +14,9 @@ import java.io.Serializable;
  * @create 2021/7/2 9:53
  **/
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class DouyuReqParams implements Serializable {
     private static final long serialVersionUID = 7164177908773743897L;
     private String platform;

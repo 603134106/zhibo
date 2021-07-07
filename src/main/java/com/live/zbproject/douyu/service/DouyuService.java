@@ -33,4 +33,6 @@ public interface DouyuService {
     DouyuTaskDetailVo getTaskDetail(DouyuReqParams douyuReqParams);
 
     List<TaskList> getTaskList();
+
+    void taskSchedule2(List<Integer> rid)throws Exception;
 }

@@ -1,6 +1,7 @@
 package com.live.zbproject.douyu.dao;
 
 import com.live.zbproject.common.entity.TaskList;
+import com.live.zbproject.common.entity.ToubangInfo;
 import com.live.zbproject.common.vo.DouyuReqParams;
 import com.live.zbproject.douyu.entity.DyUserRoom;
 import org.apache.ibatis.annotations.Mapper;
@@ -28,4 +29,8 @@ public interface DouyuMapper {
     List<TaskList> getTaskList();
 
     int getDyCountByZoneId(@Param("zone1Id") String zone1Id,@Param("zone2Id")String zone2Id);
+
+    void deleteBatch(List<DyUserRoom> dyUserRoomList);
+
+    int saveOrUpdateTouBang(List<ToubangInfo> toubangInfoList);
 }

@@ -34,9 +34,13 @@
     </select>
 
     <select id="getTaskDetail" resultType="com.live.zbproject.douyu.entity.DyUserRoom">
-        select t.*,date_format(t.update_at,'%Y-%m-%d %H:%i:%s')update_time
-        from dy_userroom t where t.zone1_id = #{zone1_id} and t.zone2_id = #{zone2_id}
-        order by t.hot desc
+        select t1.*,
+               t2.avg_gift_worth avgGiftWorth,
+               (t2.avg_interact_num/100) avgInteractNum from
+            (select t.*,date_format(t.update_at,'%Y-%m-%d %H:%i:%s')update_time
+             from dy_userroom t where t.zone1_id = #{zone1_id} and t.zone2_id = #{zone2_id}
+             order by t.hot desc)t1
+                left join toubanginfo t2 on t1.rid = t2.rid
     </select>
 
     <select id="getTaskList" resultMap="task_list">
@@ -48,6 +52,38 @@
         where zone1_id = #{zone1Id}
         and zone2_id = #{zone2Id}
     </select>
+
+    <delete id="deleteBatch">
+        delete from dy_userroom where rid in
+        <foreach collection="list" item="dyUserRoomList" open="(" close=")" separator=",">
+            #{dyUserRoomList.rid}
+        </foreach>
+    </delete>
+
+    <insert id="saveOrUpdateTouBang">
+        insert into toubanginfo
+        (rid,avg_gift_worth,avg_interact_num,create_time,update_time,anchor_id,fans,fans_change)
+        values
+        <foreach collection="list" item="toubangInfoList" separator=",">
+            (
+             #{toubangInfoList.rid}
+               ,#{toubangInfoList.avgGiftWorth}
+               ,#{toubangInfoList.avgInteractNum}
+               ,#{toubangInfoList.createTime}
+               ,#{toubangInfoList.updateTime}
+               ,#{toubangInfoList.anchorId}
+               ,#{toubangInfoList.fans}
+               ,#{toubangInfoList.fansChange}
+               )
+        </foreach>
+        on duplicate key update
+        avg_gift_worth = values(avg_gift_worth)
+        ,avg_interact_num = values(avg_interact_num)
+         ,update_time = values(update_time)
+         ,anchor_id = values(anchor_id)
+         ,fans = values(fans)
+         ,fans_change = values(fans_change)
+    </insert>
 
     <resultMap id="task_list" type="com.live.zbproject.common.entity.TaskList">
         <id property="id" column="id"/>

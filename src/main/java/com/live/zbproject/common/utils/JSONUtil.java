@@ -39,6 +39,8 @@ public class JSONUtil {
     }
 
     public static <T> T parseObject(String jsonString,Class<T> t) throws Exception {
+        String trim = jsonString.trim();
+        if(trim.length()<3)return null;
         return new ObjectMapper()
                 .enable(SerializationFeature.INDENT_OUTPUT)
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)

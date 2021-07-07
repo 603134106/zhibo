@@ -44,4 +44,6 @@ public class DyUserRoom {
     @JsonProperty("zone2_name")
     private String zone2Name;
     private String update_time;
+    private Integer avgGiftWorth;
+    private Integer avgInteractNum;
 }
